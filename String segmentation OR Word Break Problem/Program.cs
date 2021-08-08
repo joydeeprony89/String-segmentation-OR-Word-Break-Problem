@@ -7,29 +7,19 @@ namespace String_segmentation_OR_Word_Break_Problem
     {
         static void Main(string[] args)
         {
-            string s = "applepenapple";
+            string s = "aaaaaab"; // applepenapple // aaaaaab
             List<string> wordDict = new List<string>()
             {
-                "apple","pen"
+                "a","aa","aaa","b" // "apple","pen" "a","aa","aaa"
             };
 
-            Console.WriteLine(WordBreak(s, wordDict));
+            Program p = new Program();
+            Console.WriteLine(p.WordBreak(s, wordDict));
 
             Console.WriteLine(DPWordBreak(s, wordDict));
         }
 
-        static bool WordBreak(string s, IList<string> wordDict)
-        {
-            if (string.IsNullOrWhiteSpace(s)) return true;
-            int length = s.Length;
-            for (int i = 1; i <= length; i++)
-            {
-                if (wordDict.Contains(s.Substring(0, i)) && WordBreak(s.Substring(i), wordDict)) return true;
-            }
-
-            return false;
-        }
-
+        // using bottom up approach
         static bool DPWordBreak(string s, IList<string> wordDict)
         {
             int length = s.Length;
@@ -40,13 +30,34 @@ namespace String_segmentation_OR_Word_Break_Problem
             {
                 for (int i = 0; i < len; i++)
                 {
-                    if (dp[i] && wordDict.Contains(s.Substring(i, len -i)))
+                    string left = s.Substring(i, len - i);
+                    if (dp[i] && wordDict.Contains(left))
                     {
                         dp[len] = true; break;
                     }
                 }
             }
             return dp[length];
+        }
+
+        // using top down approach.
+        Dictionary<string, bool> hash = new Dictionary<string, bool>();
+        bool WordBreak(string s, IList<string> wordDict)
+        {
+            if (wordDict.Contains(s)) return true;
+            if (hash.ContainsKey(s))
+                return hash[s];
+            for(int i = 1; i <= s.Length - 1; i++)
+            {
+                string left = s.Substring(0, i);
+                if (wordDict.Contains(left) && WordBreak(s.Substring(i), wordDict)) 
+                {
+                    hash.Add(s, true);
+                    return true;
+                }
+            }
+            hash.Add(s, false);
+            return false;
         }
     }
 }
